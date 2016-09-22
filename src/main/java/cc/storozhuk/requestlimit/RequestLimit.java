@@ -18,6 +18,13 @@ public interface RequestLimit {
     RequestLimitConfig getRequestLimitConfig();
 
     interface Metrics {
+        /**
+         * Returns an estimate of the number of threads waiting for permission
+         * in this JVM process.
+         *
+         * @return estimate of the number of threads waiting for permission.
+         */
+        int getNumberOfWaitingThreads();
     }
 
     static <T> Try.CheckedSupplier<T> decorateCheckedSupplier(Try.CheckedSupplier<T> supplier, RequestLimit requestLimit) {
