@@ -1,13 +1,23 @@
+buildscript {
+    repositories {
+        jcenter()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.0.1'
+    }
+}
+
 group 'cc.storozhuk'
 version '0.1'
 
+apply plugin: 'idea'
 apply plugin: 'java'
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+
 
 sourceCompatibility = 1.8
-
-task wrapper(type: Wrapper) {
-    gradleVersion = '3.1'
-}
 
 repositories {
     mavenCentral()
@@ -21,4 +31,19 @@ dependencies {
     testCompile group: 'org.assertj', name: 'assertj-core', version: '3.5.2'
     testCompile group: 'org.mockito', name: 'mockito-core', version: '1.10.19'
     testCompile group: 'com.jayway.awaitility', name: 'awaitility', version: '1.7.0'
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '3.1'
+}
+
+jacocoTestReport {
+    reports {
+        xml.enabled = true // coveralls plugin depends on xml format report
+        html.enabled = true
+    }
+}
+
+tasks.coveralls {
+    dependsOn 'check'
 }

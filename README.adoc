@@ -2,4 +2,4 @@
 
 :hardbreaks:
 
-image:https://travis-ci.org/storozhukBM/requestlimit.svg?branch=master["Build Status", link="https://travis-ci.org/storozhukBM/requestlimit"]
+image:https://travis-ci.org/storozhukBM/requestlimit.svg?branch=master["Build Status", link="https://travis-ci.org/storozhukBM/requestlimit"] image:https://coveralls.io/repos/github/storozhukBM/requestlimit/badge.svg["Coverage Status", link="https://coveralls.io/github/storozhukBM/requestlimit"]
