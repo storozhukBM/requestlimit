@@ -39,9 +39,9 @@ public class SemaphoreBasedRequestLimitImpl implements RequestLimit {
     private void scheduleLimitRefresh() {
         scheduler.scheduleAtFixedRate(
             this::refreshLimit,
-            this.requestLimitConfig.getTimeoutDuration().toMillis(),
-            this.requestLimitConfig.getLimitRefreshPeriod().toMillis(),
-            TimeUnit.MILLISECONDS
+            this.requestLimitConfig.getLimitRefreshPeriod().toNanos(),
+            this.requestLimitConfig.getLimitRefreshPeriod().toNanos(),
+            TimeUnit.NANOSECONDS
         );
     }
 
@@ -60,7 +60,7 @@ public class SemaphoreBasedRequestLimitImpl implements RequestLimit {
         scheduleLimitRefresh();
     }
 
-    private void refreshLimit() {
+    void refreshLimit() {
         semaphore.release(this.requestLimitConfig.getLimitForPeriod());
     }
 

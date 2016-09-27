@@ -62,13 +62,13 @@ public class RequestLimitConfig {
 
     public static class Builder {
         private Duration timeoutDuration;
-        private Duration limitRefreshReriod;
+        private Duration limitRefreshPeriod;
         private int limitForPeriod;
 
         public RequestLimitConfig build() {
             return new RequestLimitConfig(
                 timeoutDuration,
-                limitRefreshReriod,
+                limitRefreshPeriod,
                 limitForPeriod
             );
         }
@@ -79,7 +79,7 @@ public class RequestLimitConfig {
         }
 
         public Builder limitRefreshPeriod(final Duration limitRefreshPeriod) {
-            this.limitRefreshReriod = checkLimitRefreshPeriod(limitRefreshPeriod);
+            this.limitRefreshPeriod = checkLimitRefreshPeriod(limitRefreshPeriod);
             return this;
         }
 
