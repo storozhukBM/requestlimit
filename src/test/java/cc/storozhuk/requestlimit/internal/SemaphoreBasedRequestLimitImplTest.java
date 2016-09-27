@@ -40,7 +40,7 @@ public class SemaphoreBasedRequestLimitImplTest {
     private static final Duration REFRESH_PERIOD = Duration.ofMillis(100);
     private static final String CONFIG_MUST_NOT_BE_NULL = "RequestLimitConfig must not be null";
     private static final String NAME_MUST_NOT_BE_NULL = "Name must not be null";
-    public static final Object O = new Object();
+    private static final Object O = new Object();
 
     private RequestLimitConfig config;
 
