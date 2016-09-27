@@ -2,6 +2,7 @@ package cc.storozhuk.requestlimit.internal;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static com.jayway.awaitility.Duration.FIVE_HUNDRED_MILLISECONDS;
+import static java.lang.Thread.State.RUNNABLE;
 import static java.lang.Thread.State.TERMINATED;
 import static java.lang.Thread.State.TIMED_WAITING;
 import static java.time.Duration.ZERO;
@@ -27,6 +28,7 @@ import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 /**
  * @author bstorozhuk
@@ -141,6 +143,33 @@ public class SemaphoreBasedRequestLimitImplTest {
         awaitImpatiently()
             .atMost(2, TimeUnit.SECONDS).until(thread::getState, equalTo(TERMINATED));
         assertThat(detailedMetrics.getAvailablePermits()).isEqualTo(1);
+    }
+
+    @Test
+    public void getPermissionInterruption() throws Exception {
+        ScheduledExecutorService scheduledExecutorService = mock(ScheduledExecutorService.class);
+        RequestLimitConfig configSpy = spy(config);
+        SemaphoreBasedRequestLimitImpl limit = new SemaphoreBasedRequestLimitImpl("test", configSpy, scheduledExecutorService);
+        limit.getPermission(ZERO);
+        limit.getPermission(ZERO);
+
+        Thread thread = new Thread(() -> {
+            limit.getPermission(TIMEOUT);
+            while (true) {
+                Function.identity().apply(1);
+            }
+        });
+        thread.setDaemon(true);
+        thread.start();
+
+        awaitImpatiently()
+            .atMost(2, TimeUnit.SECONDS).until(thread::getState, equalTo(TIMED_WAITING));
+
+        thread.interrupt();
+
+        awaitImpatiently()
+            .atMost(2, TimeUnit.SECONDS).until(thread::getState, equalTo(RUNNABLE));
+        assertThat(thread.isInterrupted()).isTrue();
     }
 
     @Test
