@@ -1,1 +1,5 @@
 = Tiny Request Limits Library designed for Java 8
+
+:hardbreaks:
+
+image:https://travis-ci.org/storozhukBM/requestlimit.svg?branch=master["Build Status", link="https://travis-ci.org/storozhukBM/requestlimit"]
