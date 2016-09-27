@@ -28,11 +28,8 @@ public interface RequestLimit {
     }
 
     static <T> Try.CheckedSupplier<T> decorateCheckedSupplier(Try.CheckedSupplier<T> supplier, RequestLimit requestLimit) {
-        RequestLimitConfig requestLimitConfig = requestLimit.getRequestLimitConfig();
-        Duration timeoutDuration = requestLimitConfig.getTimeoutDuration();
-
         Try.CheckedSupplier<T> decoratedSupplier = () -> {
-            requestLimit.getPermission(timeoutDuration);
+            waitForPermission(requestLimit);
             T result = supplier.get();
             return result;
         };
@@ -40,22 +37,17 @@ public interface RequestLimit {
     }
 
     static Try.CheckedRunnable decorateCheckedRunnable(Try.CheckedRunnable runnable, RequestLimit requestLimit) {
-        RequestLimitConfig requestLimitConfig = requestLimit.getRequestLimitConfig();
-        Duration timeoutDuration = requestLimitConfig.getTimeoutDuration();
 
         Try.CheckedRunnable decoratedRunnable = () -> {
-            requestLimit.getPermission(timeoutDuration);
+            waitForPermission(requestLimit);
             runnable.run();
         };
         return decoratedRunnable;
     }
 
     static <T, R> Try.CheckedFunction<T, R> decorateCheckedFunction(Try.CheckedFunction<T, R> function, RequestLimit requestLimit) {
-        RequestLimitConfig requestLimitConfig = requestLimit.getRequestLimitConfig();
-        Duration timeoutDuration = requestLimitConfig.getTimeoutDuration();
-
         Try.CheckedFunction<T, R> decoratedFunction = (T t) -> {
-            requestLimit.getPermission(timeoutDuration);
+            waitForPermission(requestLimit);
             R result = function.apply(t);
             return result;
         };
@@ -63,11 +55,8 @@ public interface RequestLimit {
     }
 
     static <T> Supplier<T> decorateSupplier(Supplier<T> supplier, RequestLimit requestLimit) {
-        RequestLimitConfig requestLimitConfig = requestLimit.getRequestLimitConfig();
-        Duration timeoutDuration = requestLimitConfig.getTimeoutDuration();
-
         Supplier<T> decoratedSupplier = () -> {
-            requestLimit.getPermission(timeoutDuration);
+            waitForPermission(requestLimit);
             T result = supplier.get();
             return result;
         };
@@ -75,36 +64,36 @@ public interface RequestLimit {
     }
 
     static <T> Consumer<T> decorateConsumer(Consumer<T> consumer, RequestLimit requestLimit) {
-        RequestLimitConfig requestLimitConfig = requestLimit.getRequestLimitConfig();
-        Duration timeoutDuration = requestLimitConfig.getTimeoutDuration();
-
         Consumer<T> decoratedConsumer = (T t) -> {
-            requestLimit.getPermission(timeoutDuration);
+            waitForPermission(requestLimit);
             consumer.accept(t);
         };
         return decoratedConsumer;
     }
 
     static Runnable decorateRunnable(Runnable runnable, RequestLimit requestLimit) {
-        RequestLimitConfig requestLimitConfig = requestLimit.getRequestLimitConfig();
-        Duration timeoutDuration = requestLimitConfig.getTimeoutDuration();
-
         Runnable decoratedRunnable = () -> {
-            requestLimit.getPermission(timeoutDuration);
+            waitForPermission(requestLimit);
             runnable.run();
         };
         return decoratedRunnable;
     }
 
     static <T, R> Function<T, R> decorateFunction(Function<T, R> function, RequestLimit requestLimit) {
-        RequestLimitConfig requestLimitConfig = requestLimit.getRequestLimitConfig();
-        Duration timeoutDuration = requestLimitConfig.getTimeoutDuration();
-
         Function<T, R> decoratedFunction = (T t) -> {
-            requestLimit.getPermission(timeoutDuration);
+            waitForPermission(requestLimit);
             R result = function.apply(t);
             return result;
         };
         return decoratedFunction;
+    }
+
+    static void waitForPermission(final RequestLimit requestLimit) {
+        RequestLimitConfig requestLimitConfig = requestLimit.getRequestLimitConfig();
+        Duration timeoutDuration = requestLimitConfig.getTimeoutDuration();
+        boolean permission = requestLimit.getPermission(timeoutDuration);
+        if (!permission) {
+            throw new RequestNotPermitted("Request not permitted for limit: " + requestLimit.getName());
+        }
     }
 }
